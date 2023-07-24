@@ -2,66 +2,61 @@ const todosService = require('../services/todos.service');
 const jwt = require('jsonwebtoken');
 
 const createTodos = async (req, res) => {
-  const { body } = req;
+    const { body } = req;
 
-  if ( !body.email || !body.password || !body.title || !body.deadline) {
-      return res.status(400).json({
-          status: 'Fail',
-          message: 'Data Email, Password, Title dan Deadline tidak boleh kosong !'
-      });
-  }
-
-  try {
-      const user = await userService.login(body)
-
-      if (!user) {
-          return res.status(400).json({
-              status: 'fail',
-              message: 'Email atau Password salah'
-          })
-      }
-
-      const dataUser = user [0][0];
-
-      const jwtToken = jwt.sign(
-          {id: dataUser.id, email: dataUser.email},
-          process.env.JWT_SECRET
-      )
-
-        console.log(user)
-
-        await todosService.createTodos(body);
-
-        return res.status(201).json({
-            status: 'Success',
-            mesaage: 'Todos berhasil disimpan',
-            token: jwtToken,
-            data: body
+    if ( !body.email || !body.password || !body.title || !body.deadline) {
+        return res.status(400).json({
+            status: 'Fail',
+            message: 'Data Email, Password, Title dan Deadline tidak boleh kosong !'
         });
+    }
 
-  } catch (error) {
-      return res.status(500).json({
-          status: 'Fail',
-          message: 'login gagal'
-      })
-  }
+    try {
+        const user = await userService.login(body)
+
+        if (!user) {
+            return res.status(400).json({
+            status: 'fail',
+            message: 'Email atau Password salah'
+        })}
+
+    const dataUser = user [0][0];
+
+    const jwtToken = jwt.sign(
+        {id: dataUser.id, email: dataUser.email},
+        process.env.JWT_SECRET)
+
+    console.log(user)
+
+    await todosService.createTodos(body);
+
+    return res.status(201).json({
+        status: 'Success',
+        mesaage: 'Todos berhasil disimpan',
+        token: jwtToken,
+        data: body});
+
+    } catch (error) {
+        return res.status(500).json({
+        status: 'Fail',
+        message: 'login gagal'})}
 }
 
 
 
 const updateTodos = async (req, res) => {
-  const { body } = req;
-  const id = req.user[0][0].id;
+    const { body } = req;
+    const id = req.user[0][0].id;
 
-  if ( !body.email || !body.password ) {
-      return res.status(400).json({
-          status: 'Fail',
-          message: 'Data Email dan Password tidak boleh kosong !'
-      });
-  }
+        if ( !body.email || !body.password ) {
+            return res.status(400).json({
+            status: 'Fail',
+            message: 'Data Email dan Password tidak boleh kosong !'
+            });
+            }
 
-  try {
-      const user = await userService.login(body)
+        try {
+            const user = await userService.login(body)
 
       if (!user) {
           return res.status(400).json({

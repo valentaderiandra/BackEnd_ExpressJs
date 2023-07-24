@@ -1,13 +1,23 @@
 const dbPool = require('../config/database');
 
-const createTodos = async (body) => {
-    const query = `INSERT INTO todos (title, description, deadline) VALUES ('${body.title}', '${body.description}', '${body.deadline}')`
+const MendapatkanUserId = async (body) => {
+  const query = `SELECT id FROM users WHERE email = '${body.email}' AND password = '${body.password}'`
+
+  const [rows, fields] = await dbPool.execute(query);
+  if (rows.length > 0) {
+    return rows[0].id;
+  }
+  return null;
+}
+
+const createTodos = async (user_id,body) => {
+    const query = `INSERT INTO todos (title, user_id, description, deadline) VALUES ('${body.title}','${user_id}', '${body.description}', '${body.deadline}')`
 
     return dbPool.execute(query);
 }
 
-const updateTodos = async (id,body) => {
-    const query = `UPDATE todos SET title = '${body.title}', description = '${body.description}', deadline = '${body.deadline}'  WHERE ID = ${id}}`
+const updateTodos = async (body) => {
+    const query = `UPDATE todos SET title = '${body.title}', description = '${body.description}', deadline = '${body.deadline}'  WHERE ID = '${body.id}}'`
 
     return dbPool.execute(query);
 }
@@ -32,15 +42,18 @@ const viewMyTodos = async (user_id) => {
   return dbPool.execute(query);
 }
 
-const deleteTodos = async (id) => {
-  const query = `DELETE FROM todos WHERE id = ${id}`
+const deleteTodos = async (body) => {
+  const query = 'DELETE FROM todos WHERE id = ?';
+  const values = [body.id];
 
-  return dbPool.execute(query);
+  return dbPool.execute(query, values);
+  // const query = `DELETE FROM todos WHERE id = ${id}`
+
+  // return dbPool.execute(query);
 }
 
-
-
 module.exports = { 
+    MendapatkanUserId,
     createTodos,
     updateTodos,
     viewOneTodos,

@@ -1,4 +1,5 @@
 const todosService = require('../services/todos.service');
+const userService = require('../services/user.service');
 const jwt = require('jsonwebtoken');
 
 const createTodos = async (req, res) => {
@@ -27,8 +28,9 @@ const createTodos = async (req, res) => {
         process.env.JWT_SECRET)
 
     console.log(user)
-
-    await todosService.createTodos(body);
+    
+    const user_id = await todosService.MendapatkanUserId(body);
+    await todosService.createTodos(user_id,body);
 
     return res.status(201).json({
         status: 'Success',
@@ -46,7 +48,6 @@ const createTodos = async (req, res) => {
 
 const updateTodos = async (req, res) => {
     const { body } = req;
-    const id = req.user[0][0].id;
 
         if ( !body.email || !body.password ) {
             return res.status(400).json({
@@ -82,7 +83,7 @@ const updateTodos = async (req, res) => {
       }
   
       try {
-          await todosService.updateTodos(id, body);
+          await todosService.updateTodos(body);
   
           return res.status(200).json({
               status: 'Success',
@@ -106,7 +107,8 @@ const updateTodos = async (req, res) => {
 
 
 const viewOneTodos = async (req, res) => {
-
+  const { body } = req;
+  const id = req.params.id;
   if ( !body.email || !body.password ) {
       return res.status(400).json({
           status: 'Fail',
@@ -134,7 +136,8 @@ const viewOneTodos = async (req, res) => {
         console.log(user)
   
       try {
-          const [user] = await todosService.viewOneTodos()
+        const user_id = await todosService.MendapatkanUserId(body);
+        const [user] = await todosService.viewOneTodos(id,user_id)
 
           return res.status(200).json({
               status: 'success',
@@ -160,7 +163,8 @@ const viewOneTodos = async (req, res) => {
 
 
 const viewMyTodos = async (req, res) => {
-
+  const { body } = req;
+  const user_id = await todosService.MendapatkanUserId(body);
   if ( !body.email || !body.password ) {
       return res.status(400).json({
           status: 'Fail',
@@ -187,8 +191,9 @@ const viewMyTodos = async (req, res) => {
 
         console.log(user)
   
-      try {
-          const [user] = await todosService.viewMyTodos()
+      try { 
+          const user_id = await todosService.MendapatkanUserId(body);
+          const [user] = await todosService.viewMyTodos(user_id);
 
           return res.status(200).json({
               status: 'success',
@@ -214,7 +219,8 @@ const viewMyTodos = async (req, res) => {
 
 
 const deleteTodos = async (req, res) => {
-  const id = req.user[0][0].id
+//   const id = req.user[0][0].id
+  const { body } = req;
 
   if ( !body.email || !body.password ) {
       return res.status(400).json({
@@ -243,7 +249,7 @@ const deleteTodos = async (req, res) => {
         console.log(user)
   
         try {
-          await todosService.deleteTodos(id)
+          await todosService.deleteTodos(body)
   
           return res.status(200).json({
               status: 'Succes',
